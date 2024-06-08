@@ -15,7 +15,7 @@
       <h1 class="text-xl font-bold text-white">로그인</h1>
     </div>
     <div class="page-body">
-      <div class="section pad-24 mtop-30">
+      <form id="loginForm" class="section pad-24 mtop-30">
         <input id="loginEmail" type="email" placeholder="이메일" />
         <input
           id="loginPassword"
@@ -23,8 +23,8 @@
           class="mtop-10"
           placeholder="패스워드"
         />
-        <input type="submit" class="mtop-20" value="로그인" onclick="login()" />
-      </div>
+        <input type="submit" class="mtop-20" value="로그인" />
+      </form>
       <div class="section pad-24 mtop-30">
         <div class="button" onclick="location.href='./signup.html'">
           회원가입
@@ -36,36 +36,5 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <script src="./firebaseConfig.js"></script>
     <script src="./js/LoginSignup.js"></script>
-    <script>
-      async function login() {
-        var email = $("#loginEmail").val().trim();
-        if (email == "") {
-          alert("이메일을 입력해 주세요.");
-          $("#loginEmail").focus();
-          return;
-        }
-
-        var password = $("#loginPassword").val().trim();
-        if (password == "") {
-          alert("패스워드를 입력해 주세요.");
-          $("#loginPassword").focus();
-          return;
-        }
-
-        try {
-          const userCredential = await firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password);
-          const user = userCredential.user;
-
-          alert("로그인이 성공적으로 완료되었습니다.");
-          localStorage.setItem("userName", user.displayName);
-          localStorage.setItem("userEmail", email);
-          window.location.href = "./mainPage.html";
-        } catch (error) {
-          alert(`로그인 중 오류가 발생했습니다: ${error.message}`);
-        }
-      }
-    </script>
   </body>
 </html>
