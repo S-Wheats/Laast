@@ -1,6 +1,4 @@
 <<<<<<< HEAD
-# Firebase 서비스 계정 키 파일
-fir-wheats-8c507-firebase-adminsdk-wznjp-39e20372f6.json
 
 # 기타 불필요한 파일 및 디렉터리 무시 설정
 HELP.md
@@ -54,8 +52,7 @@ npm-debug.log*
 # IDE settings
 .vscode/
 .idea/
-# Firebase 관련 비밀 정보
-.env
+
 # Node.js
 node_modules/
 
