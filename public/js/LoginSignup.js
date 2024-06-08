@@ -1,9 +1,17 @@
-import { auth, db } from "./firebaseConfig.js";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+// Firebase 초기화 코드
+const firebaseConfig = {
+  apiKey: "AIzaSyCQKRM4YAygiOaZv-18qL9M8sU-MBTrldQ",
+  authDomain: "fir-wheats-8c507.firebaseapp.com",
+  projectId: "fir-wheats-8c507",
+  storageBucket: "fir-wheats-8c507.appspot.com",
+  messagingSenderId: "939205124826",
+  appId: "1:939205124826:web:5eb441cbe1010a63237be3",
+  measurementId: "G-HQBWL5GPQ8",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 // 회원가입 함수
 async function signup(event) {
@@ -21,14 +29,13 @@ async function signup(event) {
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
+    const userCredential = await auth.createUserWithEmailAndPassword(
       email,
       password
     );
     const user = userCredential.user;
 
-    await setDoc(doc(db, "users", user.uid), {
+    await db.collection("users").doc(user.uid).set({
       username: username,
       email: email,
     });
@@ -48,8 +55,7 @@ async function login(event) {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
+    const userCredential = await auth.signInWithEmailAndPassword(
       email,
       password
     );
