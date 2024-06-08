@@ -1,9 +1,8 @@
+import { auth, db } from "./firebaseConfig.js";
 import {
-  auth,
-  db,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-} from "./firebaseConfig.js";
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 // 회원가입 함수
