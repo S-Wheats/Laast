@@ -29,10 +29,9 @@ async function signup(event) {
   }
 
   try {
-    const userCredential = await auth.createUserWithEmailAndPassword(
-      email,
-      password
-    );
+    const userCredential = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
 
     await db.collection("users").doc(user.uid).set({
@@ -55,10 +54,9 @@ async function login(event) {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const userCredential = await auth.signInWithEmailAndPassword(
-      email,
-      password
-    );
+    const userCredential = await firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password);
     const user = userCredential.user;
     alert("Login successful!");
     window.location.href = "./MySNS.html";
@@ -67,6 +65,9 @@ async function login(event) {
     alert("Login failed. Please try again.");
   }
 }
+
+document.getElementById("signupForm").addEventListener("submit", signup);
+document.getElementById("loginForm").addEventListener("submit", login);
 
 document.getElementById("signupForm").addEventListener("submit", signup);
 document.getElementById("loginForm").addEventListener("submit", login);
