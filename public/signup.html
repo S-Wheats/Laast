@@ -24,7 +24,7 @@
     </div>
     <div class="page-body">
       <div class="section pad-24 mtop-30">
-        <form id="signupForm">
+        <form id="signupForm" onsubmit="signup(event)">
           <input
             id="signupEmail"
             type="text"
@@ -65,5 +65,35 @@
     </div>
     <script src="./js/jquery-3.5.1.min.js"></script>
     <script src="./js/LoginSignup.js"></script>
+    <script>
+      async function signup(event) {
+        event.preventDefault();
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+        const passwordConfirm = document.getElementById(
+          "signupPasswordConfirm"
+        ).value;
+        const username = document.getElementById("signupUserName").value;
+
+        if (password !== passwordConfirm) {
+          alert("Passwords do not match!");
+          return;
+        }
+
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+          alert("Signup successful!");
+          window.location.href = "./Login.html";
+        } catch (error) {
+          console.error("Error during signup:", error);
+          alert("Signup failed. Please try again.");
+        }
+      }
+    </script>
   </body>
 </html>

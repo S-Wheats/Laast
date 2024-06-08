@@ -4,8 +4,8 @@ import {
   signInWithEmailAndPassword,
 } from "./firebaseConfig.js";
 
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function signup(event) {
+  event.preventDefault();
   const email = document.getElementById("signupEmail").value;
   const password = document.getElementById("signupPassword").value;
   const passwordConfirm = document.getElementById(
@@ -26,15 +26,15 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
     );
     const user = userCredential.user;
     alert("Signup successful!");
-    window.location.href = "./login.html";
+    window.location.href = "./Login.html";
   } catch (error) {
     console.error("Error during signup:", error);
     alert("Signup failed. Please try again.");
   }
-});
+}
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function login(event) {
+  event.preventDefault();
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
@@ -51,4 +51,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     console.error("Error during login:", error);
     alert("Login failed. Please try again.");
   }
-});
+}
+
+document.getElementById("signupForm").addEventListener("submit", signup);
+document.getElementById("loginForm").addEventListener("submit", login);
