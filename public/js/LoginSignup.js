@@ -1,9 +1,12 @@
 import {
   auth,
+  db,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "./firebaseConfig.js";
+import { doc, setDoc } from "firebase/firestore";
 
+// 회원가입 함수
 async function signup(event) {
   event.preventDefault();
   const email = document.getElementById("signupEmail").value;
@@ -25,6 +28,12 @@ async function signup(event) {
       password
     );
     const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      username: username,
+      email: email,
+    });
+
     alert("Signup successful!");
     window.location.href = "./Login.html";
   } catch (error) {
@@ -33,6 +42,7 @@ async function signup(event) {
   }
 }
 
+// 로그인 함수
 async function login(event) {
   event.preventDefault();
   const email = document.getElementById("loginEmail").value;

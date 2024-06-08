@@ -39,26 +39,5 @@
     </div>
     <script src="./js/jquery-3.5.1.min.js"></script>
     <script src="./js/LoginSignup.js"></script>
-    <script>
-      async function login(event) {
-        event.preventDefault();
-        const email = document.getElementById("loginEmail").value;
-        const password = document.getElementById("loginPassword").value;
-
-        try {
-          const userCredential = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          const user = userCredential.user;
-          alert("Login successful!");
-          window.location.href = "./MySNS.html";
-        } catch (error) {
-          console.error("Error during login:", error);
-          alert("Login failed. Please try again.");
-        }
-      }
-    </script>
   </body>
 </html>

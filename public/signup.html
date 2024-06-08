@@ -65,48 +65,5 @@
     </div>
     <script src="./js/jquery-3.5.1.min.js"></script>
     <script src="./js/LoginSignup.js"></script>
-    <script>
-      import {
-        db,
-        auth,
-        createUserWithEmailAndPassword,
-      } from "./firebaseConfig.js";
-      import { doc, setDoc } from "firebase/firestore";
-
-      async function signup(event) {
-        event.preventDefault();
-        const email = document.getElementById("signupEmail").value;
-        const password = document.getElementById("signupPassword").value;
-        const passwordConfirm = document.getElementById(
-          "signupPasswordConfirm"
-        ).value;
-        const username = document.getElementById("signupUserName").value;
-
-        if (password !== passwordConfirm) {
-          alert("Passwords do not match!");
-          return;
-        }
-
-        try {
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          const user = userCredential.user;
-
-          await setDoc(doc(db, "users", user.uid), {
-            username: username,
-            email: email,
-          });
-
-          alert("Signup successful!");
-          window.location.href = "./Login.html";
-        } catch (error) {
-          console.error("Error during signup:", error);
-          alert("Signup failed. Please try again.");
-        }
-      }
-    </script>
   </body>
 </html>
