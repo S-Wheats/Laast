@@ -1,0 +1,70 @@
+<<<<<<< HEAD
+# Firebase 서비스 계정 키 파일
+fir-wheats-8c507-firebase-adminsdk-wznjp-39e20372f6.json
+
+# 기타 불필요한 파일 및 디렉터리 무시 설정
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+node_modules/
+logs/
+*.log
+npm-debug.log*
+
+# Secret keys and credentials
+*.json
+
+# 기타 무시할 파일
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
+
+# Node.js
+node_modules/
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+
+# 기타 무시할 파일
+.DS_Store
+
+>>>>>>> 4c8bfbd (login, signup (node.js))
+"fir-wheats-8c507-firebase-adminsdk-wznjp-39e20372f6.json" 

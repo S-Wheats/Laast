@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1.0"
+    />
+    <title>S-Wheats</title>
+    <link rel="stylesheet" href="./css/sns-style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poor+Story&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="./firebaseConfig.js"></script>
+  </head>
+  <body class="bg-gray-100">
+    <!-- 상단바 -->
+    <div class="bg-stone-700 shadow-md p-4" id="top">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <img src="./img/logo.png" width="40" />
+          <p class="text-xl text-white font-bold pt-4">커뮤니티</p>
+        </div>
+        <!-- 채팅방 생성 버튼 -->
+        <button
+          onclick="showChatRoomForm()"
+          class="p-2 bg-blue-500 text-white rounded-full shadow-lg text-lg"
+        >
+          채팅방 생성
+        </button>
+      </div>
+    </div>
+
+    <!-- 채팅방 생성 폼 -->
+    <div
+      id="chatRoomForm"
+      class="bg-white p-4 shadow-md mt-4 mx-2 rounded-lg"
+      style="display: none"
+    >
+      <h2 class="text-xl font-bold mb-4">채팅방 생성</h2>
+      <input
+        type="text"
+        id="chatRoomName"
+        class="w-full p-2 border rounded mb-2"
+        placeholder="채팅방 이름을 입력하세요"
+      />
+      <button
+        onclick="createChatRoom()"
+        class="p-2 bg-blue-500 text-white rounded"
+      >
+        생성하기
+      </button>
+      <button
+        onclick="hideChatRoomForm()"
+        class="p-2 bg-gray-500 text-white rounded mt-2"
+      >
+        취소
+      </button>
+    </div>
+
+    <!-- 채팅방 목록 -->
+    <div
+      id="chatRoomList"
+      class="flex bg-white p-4 shadow-md mt-4 mx-2 rounded-lg overflow-x-auto space-x-4"
+      style="max-width: 100%; white-space: nowrap"
+    >
+      <!-- 채팅방 목록이 여기에 렌더링됩니다. -->
+    </div>
+
+    <!-- 게시글 목록 -->
+    <div id="postList" class="bg-white p-4 shadow-md mt-4 mx-2 rounded-lg">
+      <h2 class="text-xl font-bold mb-4">게시글 목록</h2>
+      <!-- 게시글 목록이 여기에 렌더링됩니다. -->
+    </div>
+
+    <!-- 게시글 작성 폼 -->
+    <div
+      id="postForm"
+      class="bg-white p-4 shadow-md mt-4 mx-2 rounded-lg"
+      style="display: none"
+    >
+      <h2 class="text-xl font-bold mb-4">게시글 작성</h2>
+      <input
+        type="text"
+        id="postTitle"
+        class="w-full p-2 border rounded mb-2"
+        placeholder="제목을 입력하세요"
+      />
+      <textarea
+        id="postContent"
+        class="w-full p-2 border rounded mb-2"
+        placeholder="내용을 입력하세요"
+      ></textarea>
+      <input
+        type="file"
+        id="postImage"
+        class="w-full p-2 border rounded mb-2"
+        accept="image/*"
+      />
+      <button onclick="submitPost()" class="p-2 bg-blue-500 text-white rounded">
+        작성하기
+      </button>
+      <button
+        onclick="hidePostForm()"
+        class="p-2 bg-gray-500 text-white rounded mt-2"
+      >
+        취소
+      </button>
+    </div>
+
+    <!-- + 버튼 -->
+    <div class="fixed bottom-20 right-5">
+      <button
+        onclick="showPostForm()"
+        class="p-4 bg-blue-500 text-white rounded-full shadow-lg text-2xl"
+      >
+        +
+      </button>
+    </div>
+
+    <!-- 하단바 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white shadow-md z-10">
+      <div class="flex justify-around py-2">
+        <div
+          class="flex flex-col items-center"
+          onclick="location.href='./MyPage.html'"
+        >
+          <svg
+            data-slot="icon"
+            class="w-8 h-8"
+            fill="none"
+            stroke-width="1.5"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            ></path>
+          </svg>
+          <span class="text-xs">마이페이지</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <svg
+            data-slot="icon"
+            class="w-8 h-8"
+            fill="none"
+            stroke-width="1.5"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1-18 0Z"
+            ></path>
+          </svg>
+          <span class="text-xs">포장예약</span>
+        </div>
+        <div
+          class="flex flex-col items-center"
+          onclick="location.href='./mainPage.html'"
+        >
+          <svg
+            data-slot="icon"
+            class="w-8 h-8"
+            fill="none"
+            stroke-width="1.5"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+            ></path>
+          </svg>
+          <span class="text-xs">홈</span>
+        </div>
+        <div
+          class="flex flex-col items-center"
+          onclick="location.href='./MySNS.html'"
+        >
+          <svg
+            data-slot="icon"
+            class="w-8 h-8"
+            fill="none"
+            stroke-width="1.5"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 9a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm0 0v1.5a2.25 2.25 0 0 0 2.25 2.25h3a2.25 2.25 0 0 0 2.25-2.25V9a2.25 2.25 0 0 0-2.25-2.25h-3a2.25 2.25 0 0 0-2.25 2.25v1.5Zm-9-2.25A2.25 2.25 0 1 1 9 9v1.5a2.25 2.25 0 0 0 2.25 2.25h3a2.25 2.25 0 0 0 2.25-2.25V9A2.25 2.25 0 0 0 14.25 6.75h-3A2.25 2.25 0 0 0 9 9v1.5Zm3 7.5A2.25 2.25 0 1 1 12 18v-1.5a2.25 2.25 0 0 0-2.25-2.25h-3A2.25 2.25 0 0 0 4.5 16.5V18a2.25 2.25 0 0 0 2.25 2.25h3A2.25 2.25 0 0 0 12 18v-1.5Zm-3-6.75h3a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25h-3A2.25 2.25 0 0 1 6 18v-1.5a2.25 2.25 0 0 1 2.25-2.25Zm9 6.75a2.25 2.25 0 1 1 4.5 0v1.5a2.25 2.25 0 0 1-2.25 2.25h-3A2.25 2.25 0 0 1 14.25 18v-1.5A2.25 2.25 0 0 1 16.5 14h3a2.25 2.25 0 0 1 2.25 2.25v1.5A2.25 2.25 0 0 1 19.5 20h-3a2.25 2.25 0 0 1-2.25-2.25v-1.5a2.25 2.25 0 0 1 2.25-2.25Zm-3-4.5a2.25 2.25 0 0 1-4.5 0v-1.5a2.25 2.25 0 0 1 2.25-2.25h3a2.25 2.25 0 0 1 2.25 2.25v1.5a2.25 2.25 0 0 1-2.25 2.25Z"
+            ></path>
+          </svg>
+          <span class="text-xs">SNS</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Firebase 초기화
+      const app = firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      function showChatRoomForm() {
+        document.getElementById("chatRoomForm").style.display = "block";
+      }
+
+      function hideChatRoomForm() {
+        document.getElementById("chatRoomForm").style.display = "none";
+      }
+
+      function showPostForm() {
+        document.getElementById("postForm").style.display = "block";
+      }
+
+      function hidePostForm() {
+        document.getElementById("postForm").style.display = "none";
+      }
+
+      // 채팅방 생성
+      async function createChatRoom() {
+        const chatRoomName = document
+          .getElementById("chatRoomName")
+          .value.trim();
+        if (chatRoomName === "") {
+          alert("채팅방 이름을 입력하세요.");
+          return;
+        }
+
+        try {
+          await db.collection("chatRooms").add({
+            name: chatRoomName,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          alert("채팅방이 생성되었습니다.");
+          hideChatRoomForm();
+          loadChatRooms(); // 채팅방 목록 다시 로드
+        } catch (error) {
+          console.error("Error creating chat room:", error);
+          alert("채팅방 생성 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 채팅방 목록 로드
+      async function loadChatRooms() {
+        const chatRoomList = document.getElementById("chatRoomList");
+        chatRoomList.innerHTML = ""; // 기존 목록 초기화
+
+        try {
+          const chatRoomsSnapshot = await db
+            .collection("chatRooms")
+            .orderBy("createdAt", "desc")
+            .get();
+          chatRoomsSnapshot.forEach((doc) => {
+            const chatRoom = doc.data();
+            const chatRoomDiv = document.createElement("div");
+            chatRoomDiv.className = "chat-room";
+            chatRoomDiv.innerText = chatRoom.name;
+            chatRoomList.appendChild(chatRoomDiv);
+          });
+        } catch (error) {
+          console.error("Error loading chat rooms:", error);
+          alert("채팅방 목록 로드 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 게시글 작성
+      async function submitPost() {
+        const postTitle = document.getElementById("postTitle").value.trim();
+        const postContent = document.getElementById("postContent").value.trim();
+        const postImage = document.getElementById("postImage").files[0];
+
+        if (postTitle === "" || postContent === "") {
+          alert("제목과 내용을 입력하세요.");
+          return;
+        }
+
+        try {
+          let imageURL = "";
+          if (postImage) {
+            const storageRef = firebase.storage().ref();
+            const imageRef = storageRef.child(`postImages/${postImage.name}`);
+            await imageRef.put(postImage);
+            imageURL = await imageRef.getDownloadURL();
+          }
+
+          await db.collection("posts").add({
+            title: postTitle,
+            content: postContent,
+            imageURL: imageURL,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          alert("게시글이 작성되었습니다.");
+          hidePostForm();
+          loadPosts(); // 게시글 목록 다시 로드
+        } catch (error) {
+          console.error("Error submitting post:", error);
+          alert("게시글 작성 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 게시글 목록 로드
+      async function loadPosts() {
+        const postList = document.getElementById("postList");
+        postList.innerHTML = ""; // 기존 목록 초기화
+
+        try {
+          const postsSnapshot = await db
+            .collection("posts")
+            .orderBy("createdAt", "desc")
+            .get();
+          postsSnapshot.forEach((doc) => {
+            const post = doc.data();
+            const postDiv = document.createElement("div");
+            postDiv.className = "post";
+            postDiv.innerHTML = `
+              <h3 class="text-xl font-bold">${post.title}</h3>
+              <p>${post.content}</p>
+              ${
+                post.imageURL
+                  ? `<img src="${post.imageURL}" alt="Post Image" class="post-image" />`
+                  : ""
+              }
+            `;
+            postList.appendChild(postDiv);
+          });
+        } catch (error) {
+          console.error("Error loading posts:", error);
+          alert("게시글 목록 로드 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 페이지 로드 시 채팅방 및 게시글 목록 로드
+      window.onload = function () {
+        loadChatRooms();
+        loadPosts();
+      };
+    </script>
+  </body>
+</html>
