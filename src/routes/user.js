@@ -55,28 +55,28 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// router.post("/change-password", async (req, res) => {
-//   const { email, newPassword } = req.body;
+router.post("/change-password", async (req, res) => {
+  const { email, newPassword } = req.body;
 
-//   try {
-//     await updateUserPassword(email, newPassword);
-//     res.json({ message: "비밀번호가 변경되었습니다." });
-//   } catch (error) {
-//     console.error("비밀번호 변경 중 오류가 발생했습니다:", error);
-//     res.status(500).json({ message: "비밀번호 변경 중 오류가 발생했습니다." });
-//   }
-// });
+  try {
+    await updateUserPassword(email, newPassword);
+    res.json({ message: "비밀번호가 변경되었습니다." });
+  } catch (error) {
+    console.error("비밀번호 변경 중 오류가 발생했습니다:", error);
+    res.status(500).json({ message: "비밀번호 변경 중 오류가 발생했습니다." });
+  }
+});
 
-// router.post("/delete", async (req, res) => {
-//   const { email } = req.body;
+router.post("/delete", async (req, res) => {
+  const { email } = req.body;
 
-//   try {
-//     await deleteUserByEmail(email);
-//     res.json({ message: "회원탈퇴가 완료되었습니다." });
-//   } catch (error) {
-//     console.error("회원탈퇴 중 오류가 발생했습니다:", error);
-//     res.status(500).json({ message: "회원탈퇴 중 오류가 발생했습니다." });
-//   }
-// });
+  try {
+    await deleteUserByEmail(email);
+    res.json({ message: "회원탈퇴가 완료되었습니다." });
+  } catch (error) {
+    console.error("회원탈퇴 중 오류가 발생했습니다:", error);
+    res.status(500).json({ message: "회원탈퇴 중 오류가 발생했습니다." });
+  }
+});
 
-// module.exports = router;
+module.exports = router;
