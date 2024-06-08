@@ -1,58 +1,107 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
-    <meta charset="UTF-8" />
-    <title>회원가입</title>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=0"
+    />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./css/Signup.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>MySNS</title>
+    <style>
+      .desc {
+        float: left;
+        width: 100%;
+        color: #888;
+        font-size: 0.9em;
+      }
+    </style>
   </head>
   <body>
-    <h1>회원가입</h1>
-    <form onsubmit="signup(); return false;">
-      <label for="email">이메일:</label>
-      <input type="email" id="email" required /><br />
-      <label for="password">비밀번호:</label>
-      <input type="password" id="password" required /><br />
-      <label for="passwordConfirm">비밀번호 확인:</label>
-      <input type="password" id="passwordConfirm" required /><br />
-      <button type="submit">회원가입</button>
-    </form>
+    <div class="page-hdr bg-stone-700 p-4 shadow-md">
+      <h1 class="text-xl font-bold text-white">회원가입</h1>
+    </div>
+    <div class="page-body">
+      <form id="signupForm" class="section pad-24 mtop-30">
+        <input id="signupEmail" type="text" placeholder="아이디 (이메일주소)" />
+        <input
+          id="signupPassword"
+          type="password"
+          class="mtop-10"
+          placeholder="패스워드"
+        />
+        <input
+          id="signupPasswordConfirm"
+          type="password"
+          class="mtop-10"
+          placeholder="패스워드 (확인)"
+        />
+        <input
+          id="signupUserName"
+          type="text"
+          class="mtop-10"
+          placeholder="이름 (닉네임)"
+        />
+        <input type="submit" class="mtop-20" value="회원가입하기" />
+      </form>
+      <div class="section pad-24 mtop-30">
+        <div class="button" onclick="location.href='./Login.html'">
+          뒤로가기
+        </div>
+      </div>
+      <div class="section pad-24 mtop-30">
+        <div class="desc mtop-20 mbot-20">
+          회원 가입시 S-wheats의 약관에 동의하신 것으로 간주합니다.
+        </div>
+        <a href="#"><div class="button">약관보기</div></a>
+      </div>
+    </div>
+    <script src="./js/jquery-3.5.1.min.js"></script>
+    <script src="./js/LoginSignup.js"></script>
     <script>
-      // Firebase 초기화
-      const firebaseConfig = {
-        apiKey: "AIzaSyCQKRM4YAygiOaZv-18qL9M8sU-MBTrldQ",
-        authDomain: "fir-wheats-8c507.firebaseapp.com",
-        projectId: "fir-wheats-8c507",
-        storageBucket: "fir-wheats-8c507.appspot.com",
-        messagingSenderId: "939205124826",
-        appId: "1:939205124826:web:5eb441cbe1010a63237be3",
-        measurementId: "G-HQBWL5GPQ8",
-      };
-
-      const app = firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-
-      function signup() {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const passwordConfirm =
-          document.getElementById("passwordConfirm").value;
-
-        if (password !== passwordConfirm) {
-          alert("비밀번호가 일치하지 않습니다.");
+      async function signup() {
+        var id = $("#signupEmail").val().trim();
+        if (id == "") {
+          alert("아이디를 입력해 주세요.");
+          $("#signupEmail").focus();
           return;
         }
 
-        auth
-          .createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            alert("회원가입 성공");
-            // 회원가입 성공 후 리다이렉션
-            window.location.href = "login.jsp";
-          })
-          .catch((error) => {
-            alert("회원가입 실패: " + error.message);
-          });
+        var ps = $("#signupPassword").val().trim();
+        if (ps == "") {
+          alert("패스워드를 입력해 주세요.");
+          $("#signupPassword").focus();
+          return;
+        }
+
+        var ps2 = $("#signupPasswordConfirm").val().trim();
+        if (ps != ps2) {
+          alert("입력된 두 개의 패스워드가 일치하지 않습니다.");
+          $("#signupPasswordConfirm").focus();
+          return;
+        }
+
+        var name = $("#signupUserName").val().trim();
+        if (name == "") {
+          alert("이름을 입력해 주세요.");
+          $("#signupUserName").focus();
+          return;
+        }
+
+        const response = await fetch("/api/users/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: id, password: ps, name: name }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+          window.location.href = "./index.html";
+        } else {
+          alert(data.message);
+        }
       }
     </script>
   </body>

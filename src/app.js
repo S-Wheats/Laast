@@ -1,14 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const {
-  initializeApp,
-  applicationDefault,
-  cert,
-} = require("firebase-admin/app");
+const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const { getAuth } = require("firebase-admin/auth");
-
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+const serviceAccount = require("./path/to/your/firebase-service-account-file.json");
 
 initializeApp({
   credential: cert(serviceAccount),

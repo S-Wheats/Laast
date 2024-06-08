@@ -23,28 +23,28 @@
       <h1 class="text-xl font-bold text-white">회원가입</h1>
     </div>
     <div class="page-body">
-      <div class="section pad-24 mtop-30">
-        <input id="id" type="text" placeholder="아이디 (이메일주소)" />
-        <input id="ps" type="password" class="mtop-10" placeholder="패스워드" />
+      <form id="signupForm" class="section pad-24 mtop-30">
+        <input id="signupEmail" type="text" placeholder="아이디 (이메일주소)" />
         <input
-          id="ps2"
+          id="signupPassword"
+          type="password"
+          class="mtop-10"
+          placeholder="패스워드"
+        />
+        <input
+          id="signupPasswordConfirm"
           type="password"
           class="mtop-10"
           placeholder="패스워드 (확인)"
         />
         <input
-          id="name"
+          id="signupUserName"
           type="text"
           class="mtop-10"
           placeholder="이름 (닉네임)"
         />
-        <input
-          type="submit"
-          class="mtop-20"
-          value="회원가입하기"
-          onclick="signup()"
-        />
-      </div>
+        <input type="submit" class="mtop-20" value="회원가입하기" />
+      </form>
       <div class="section pad-24 mtop-30">
         <div class="button" onclick="location.href='./Login.html'">
           뒤로가기
@@ -61,31 +61,31 @@
     <script src="./js/LoginSignup.js"></script>
     <script>
       async function signup() {
-        var id = $("#id").val().trim();
+        var id = $("#signupEmail").val().trim();
         if (id == "") {
           alert("아이디를 입력해 주세요.");
-          $("#id").focus();
+          $("#signupEmail").focus();
           return;
         }
 
-        var ps = $("#ps").val().trim();
+        var ps = $("#signupPassword").val().trim();
         if (ps == "") {
           alert("패스워드를 입력해 주세요.");
-          $("#ps").focus();
+          $("#signupPassword").focus();
           return;
         }
 
-        var ps2 = $("#ps2").val().trim();
+        var ps2 = $("#signupPasswordConfirm").val().trim();
         if (ps != ps2) {
           alert("입력된 두 개의 패스워드가 일치하지 않습니다.");
-          $("#ps2").focus();
+          $("#signupPasswordConfirm").focus();
           return;
         }
 
-        var name = $("#name").val().trim();
+        var name = $("#signupUserName").val().trim();
         if (name == "") {
           alert("이름을 입력해 주세요.");
-          $("#name").focus();
+          $("#signupUserName").focus();
           return;
         }
 
