@@ -1,27 +1,46 @@
-// app.js
-const express = require("express");
-const bodyParser = require("body-parser");
 const admin = require("firebase-admin");
-const serviceAccount = require("./fir-wheats-8c507-firebase-adminsdk-wznjp-39e20372f6.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
-});
-
 const db = admin.firestore();
-const app = express();
+const bcrypt = require("bcryptjs");
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const createUser = async (email, password, name) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const userRef = db.collection("users").doc(email);
 
-// Routes
-const userRoutes = require("./routes/user");
-app.use("/api/users", userRoutes);
+  await userRef.set({
+    email,
+    password: hashedPassword,
+    name,
+  });
+};
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const getUserByEmail = async (email) => {
+  const userRef = db.collection("users").doc(email);
+  const doc = await userRef.get();
 
-module.exports = db;
+  if (!doc.exists) {
+    return null;
+  }
+
+  return doc.data();
+};
+
+const deleteUserByEmail = async (email) => {
+  const userRef = db.collection("users").doc(email);
+  await userRef.delete();
+};
+
+const updateUserPassword = async (email, newPassword) => {
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  const userRef = db.collection("users").doc(email);
+
+  await userRef.update({
+    password: hashedPassword,
+  });
+};
+
+module.exports = {
+  createUser,
+  getUserByEmail,
+  deleteUserByEmail,
+  updateUserPassword,
+};

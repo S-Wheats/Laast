@@ -54,7 +54,8 @@ npm-debug.log*
 # IDE settings
 .vscode/
 .idea/
-
+# Firebase 관련 비밀 정보
+.env
 # Node.js
 node_modules/
 

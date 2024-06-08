@@ -1,70 +1,39 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { initializeApp, cert } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
-const { getAuth } = require("firebase-admin/auth");
-const serviceAccount = require("./path/to/your/firebase-service-account-file.json");
+const admin = require("firebase-admin");
+require("dotenv").config();
 
-initializeApp({
-  credential: cert(serviceAccount),
-});
-
-const db = getFirestore();
-const auth = getAuth();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(bodyParser.json());
-
-// Firebase Auth 미들웨어
-const authMiddleware = async (req, res, next) => {
-  const idToken = req.headers.authorization;
-  if (!idToken) {
-    return res.status(401).send({ message: "Unauthorized" });
-  }
-
-  try {
-    const decodedToken = await auth.verifyIdToken(idToken);
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    res.status(401).send({ message: "Unauthorized" });
-  }
+const serviceAccount = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
 };
 
-// API 엔드포인트 예시
-app.post("/api/users/signup", async (req, res) => {
-  const { email, password, name } = req.body;
-
-  try {
-    const userRecord = await auth.createUser({
-      email,
-      password,
-      displayName: name,
-    });
-
-    res
-      .status(201)
-      .send({ message: "User created successfully", uid: userRecord.uid });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
 });
 
-app.post("/api/users/delete", authMiddleware, async (req, res) => {
-  const { email } = req.body;
+const db = admin.firestore();
+const app = express();
 
-  try {
-    const user = await auth.getUserByEmail(email);
-    await auth.deleteUser(user.uid);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    res.status(200).send({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(400).send({ message: error.message });
-  }
-});
+// Routes
+const userRoutes = require("./routes/user");
+app.use("/api/users", userRoutes);
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = db;
