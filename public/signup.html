@@ -94,12 +94,14 @@
         }
 
         try {
-          const userCredential = await firebase
-            .auth()
-            .createUserWithEmailAndPassword(id, ps);
+          const userCredential = await auth.createUserWithEmailAndPassword(
+            auth,
+            id,
+            ps
+          );
           const user = userCredential.user;
 
-          await firebase.firestore().collection("users").doc(user.uid).set({
+          await setDoc(doc(db, "users", user.uid), {
             email: id,
             userName: name,
           });

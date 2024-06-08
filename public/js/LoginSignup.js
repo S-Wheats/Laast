@@ -1,3 +1,11 @@
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { auth, db } from "./firebaseConfig";
+
 document.getElementById("signupForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("signupEmail").value;
@@ -5,12 +13,14 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
   const userName = document.getElementById("signupUserName").value;
 
   try {
-    const userCredential = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     const user = userCredential.user;
 
-    await firebase.firestore().collection("users").doc(user.uid).set({
+    await setDoc(doc(db, "users", user.uid), {
       email: email,
       userName: userName,
     });
@@ -28,15 +38,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const userCredential = await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     const user = userCredential.user;
 
-    alert("로그인이 성공적으로 완료되었습니다.");
-    localStorage.setItem("userName", user.displayName);
-    localStorage.setItem("userEmail", email);
-    window.location.href = "./mainPage.html";
+    alert("로그인이 성공하였습니다.");
+    window.location.href = "./index.html";
   } catch (error) {
     alert(`로그인 중 오류가 발생했습니다: ${error.message}`);
   }
