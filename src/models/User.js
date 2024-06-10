@@ -1,46 +1,51 @@
-const admin = require("firebase-admin");
-const db = admin.firestore();
-const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
 
-const createUser = async (email, password, name) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const userRef = db.collection("users").doc(email);
+const usersFilePath = path.join(__dirname, "users.json");
 
-  await userRef.set({
-    email,
-    password: hashedPassword,
-    name,
-  });
-};
+function readUsersFile() {
+  if (!fs.existsSync(usersFilePath)) {
+    return [];
+  }
+  const data = fs.readFileSync(usersFilePath, "utf8");
+  return JSON.parse(data);
+}
 
-const getUserByEmail = async (email) => {
-  const userRef = db.collection("users").doc(email);
-  const doc = await userRef.get();
+function writeUsersFile(users) {
+  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), "utf8");
+}
 
-  if (!doc.exists) {
-    return null;
+class User {
+  static getUserByEmail(email) {
+    const users = readUsersFile();
+    return users.find((user) => user.email === email);
   }
 
-  return doc.data();
-};
+  static createUser(email, password, name) {
+    const users = readUsersFile();
+    const newUser = { email, password, name };
+    users.push(newUser);
+    writeUsersFile(users);
+    return newUser;
+  }
 
-const deleteUserByEmail = async (email) => {
-  const userRef = db.collection("users").doc(email);
-  await userRef.delete();
-};
+  static updatePassword(email, newPassword) {
+    const users = readUsersFile();
+    const userIndex = users.findIndex((user) => user.email === email);
+    if (userIndex === -1) {
+      return null;
+    }
+    users[userIndex].password = newPassword;
+    writeUsersFile(users);
+    return users[userIndex];
+  }
 
-const updateUserPassword = async (email, newPassword) => {
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  const userRef = db.collection("users").doc(email);
+  static deleteUser(email) {
+    let users = readUsersFile();
+    users = users.filter((user) => user.email !== email);
+    writeUsersFile(users);
+    return true;
+  }
+}
 
-  await userRef.update({
-    password: hashedPassword,
-  });
-};
-
-module.exports = {
-  createUser,
-  getUserByEmail,
-  deleteUserByEmail,
-  updateUserPassword,
-};
+module.exports = User;

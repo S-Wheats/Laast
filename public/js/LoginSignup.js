@@ -1,73 +1,118 @@
-// Firebase 초기화 코드
-const firebaseConfig = {
-  apiKey: "AIzaSyCQKRM4YAygiOaZv-18qL9M8sU-MBTrldQ",
-  authDomain: "fir-wheats-8c507.firebaseapp.com",
-  projectId: "fir-wheats-8c507",
-  storageBucket: "fir-wheats-8c507.appspot.com",
-  messagingSenderId: "939205124826",
-  appId: "1:939205124826:web:5eb441cbe1010a63237be3",
-  measurementId: "G-HQBWL5GPQ8",
-};
+document.addEventListener("DOMContentLoaded", (event) => {
+  const userEmail = localStorage.getItem("userEmail");
+  if (userEmail) {
+    document.getElementById("UserID").innerText = userEmail;
+  }
+});
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// 회원가입 함수
-async function signup(event) {
-  event.preventDefault();
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
-  const passwordConfirm = document.getElementById(
-    "signupPasswordConfirm"
-  ).value;
-  const username = document.getElementById("signupUserName").value;
-
-  if (password !== passwordConfirm) {
-    alert("Passwords do not match!");
+async function signup() {
+  var id = document.getElementById("id").value.trim();
+  if (id === "") {
+    alert("아이디를 입력해 주세요.");
+    document.getElementById("id").focus();
     return;
   }
 
-  try {
-    const userCredential = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
+  var ps = document.getElementById("ps").value.trim();
+  if (ps === "") {
+    alert("패스워드를 입력해 주세요.");
+    document.getElementById("ps").focus();
+    return;
+  }
 
-    await db.collection("users").doc(user.uid).set({
-      username: username,
-      email: email,
-    });
+  var ps2 = document.getElementById("ps2").value.trim();
+  if (ps !== ps2) {
+    alert("입력된 두 개의 패스워드가 일치하지 않습니다.");
+    document.getElementById("ps2").focus();
+    return;
+  }
 
-    alert("Signup successful!");
+  var name = document.getElementById("name").value.trim();
+  if (name === "") {
+    alert("이름을 입력해 주세요.");
+    document.getElementById("name").focus();
+    return;
+  }
+
+  const response = await fetch("/api/users/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: id, password: ps, name: name }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    alert(data.message);
     window.location.href = "./Login.html";
-  } catch (error) {
-    console.error("Error during signup:", error);
-    alert("Signup failed. Please try again.");
+  } else {
+    alert(data.message);
   }
 }
 
-// 로그인 함수
-async function login(event) {
-  event.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+async function login() {
+  var email = document.getElementById("email").value.trim();
+  var password = document.getElementById("password").value.trim();
 
-  try {
-    const userCredential = await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-    alert("Login successful!");
-    window.location.href = "./MySNS.html";
-  } catch (error) {
-    console.error("Error during login:", error);
-    alert("Login failed. Please try again.");
+  const response = await fetch("/api/users/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    alert(data.message);
+    localStorage.setItem("userEmail", email);
+    window.location.href = "./index.html";
+  } else {
+    alert(data.message);
   }
 }
 
-document.getElementById("signupForm").addEventListener("submit", signup);
-document.getElementById("loginForm").addEventListener("submit", login);
+async function changePassword() {
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  if (newPassword !== confirmPassword) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
 
-document.getElementById("signupForm").addEventListener("submit", signup);
-document.getElementById("loginForm").addEventListener("submit", login);
+  const response = await fetch("/api/users/change-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: localStorage.getItem("userEmail"),
+      newPassword: newPassword,
+    }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    alert("비밀번호가 변경되었습니다.");
+    closeChangePasswordModal();
+  } else {
+    alert("비밀번호 변경에 실패했습니다.");
+  }
+}
+
+async function deleteAccount() {
+  if (!confirm("정말로 회원탈퇴를 하시겠습니까?")) {
+    return;
+  }
+
+  const response = await fetch("/api/users/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: localStorage.getItem("userEmail") }),
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    alert("회원탈퇴가 완료되었습니다.");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    window.location.href = "./signup.html";
+  } else {
+    alert("회원탈퇴에 실패했습니다.");
+  }
+}
